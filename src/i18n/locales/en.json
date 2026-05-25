@@ -71,7 +71,11 @@
     "emailExists": "An account with this email already exists",
     "signOut": "Sign out",
     "supabaseNotConfigured": "Supabase is not configured. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to .env",
-    "emailNotConfirmed": "Please verify your email before signing in"
+    "emailNotConfirmed": "Please verify your email before signing in",
+    "apiKeyError": "Supabase API key missing. Check .env (VITE_SUPABASE_ANON_KEY), restart npm run dev, and see docs/SUPABASE_GMAIL_SMTP.md",
+    "callbackLoading": "Confirming your email…",
+    "callbackSuccess": "Email verified! Redirecting…",
+    "callbackNoSession": "Could not complete sign-in. Try logging in manually."
   },
   "verify": {
     "title": "Verify your email",

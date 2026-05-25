@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { supabase, isSupabaseConfigured } from '@/lib/supabase'
+import { getSupabase, getAuthRedirectUrl, isSupabaseConfigured } from '@/lib/supabase'
 import { profileToUser } from '@/lib/supabase-mappers'
 import type { ClassSetupInput, User } from '@/types'
 import type { DbProfile } from '@/types/database'
@@ -28,7 +28,7 @@ interface AuthState {
 }
 
 async function fetchProfile(userId: string): Promise<User | null> {
-  const { data, error } = await supabase
+  const { data, error } = await getSupabase()
     .from('profiles')
     .select('*')
     .eq('id', userId)
@@ -55,7 +55,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       return
     }
 
-    const { data: { session } } = await supabase.auth.getSession()
+    const { data: { session } } = await getSupabase().auth.getSession()
     if (session?.user?.email_confirmed_at) {
       const user = await fetchProfile(session.user.id)
       set({ user, isAuthenticated: !!user, isInitialized: true })
@@ -63,7 +63,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       set({ isInitialized: true })
     }
 
-    supabase.auth.onAuthStateChange(async (event, session) => {
+    getSupabase().auth.onAuthStateChange(async (event, session) => {
       if (session?.user?.email_confirmed_at) {
         const user = await fetchProfile(session.user.id)
         set({ user, isAuthenticated: !!user })
@@ -78,7 +78,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       return { success: false, error: 'auth.supabaseNotConfigured' }
     }
     set({ isLoading: true })
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+    const { data, error } = await getSupabase().auth.signInWithPassword({ email, password })
     set({ isLoading: false })
 
     if (error) {
@@ -105,12 +105,12 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       return { success: false, error: 'auth.supabaseNotConfigured' }
     }
     set({ isLoading: true })
-    const { data, error } = await supabase.auth.signUp({
+    const { data, error } = await getSupabase().auth.signUp({
       email,
       password,
       options: {
         data: { name, role, is_asprak: isAsprak },
-        emailRedirectTo: `${window.location.origin}/login`,
+        emailRedirectTo: getAuthRedirectUrl('/auth/callback'),
       },
     })
     set({ isLoading: false })
@@ -124,7 +124,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     }
 
     if (data.user) {
-      await supabase.from('profiles').update({ is_asprak: isAsprak }).eq('id', data.user.id)
+      await getSupabase().from('profiles').update({ is_asprak: isAsprak }).eq('id', data.user.id)
 
       // Supabase: no session until email confirmed
       if (!data.session) {
@@ -140,12 +140,21 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   },
 
   resendVerificationEmail: async (email) => {
-    const { error } = await supabase.auth.resend({
+    if (!isSupabaseConfigured) {
+      return { success: false, error: 'auth.supabaseNotConfigured' }
+    }
+    const { error } = await getSupabase().auth.resend({
       type: 'signup',
       email,
-      options: { emailRedirectTo: `${window.location.origin}/login` },
+      options: { emailRedirectTo: getAuthRedirectUrl('/auth/callback') },
     })
-    if (error) return { success: false, error: error.message }
+    if (error) {
+      const msg = error.message
+      if (msg.toLowerCase().includes('api key') || msg.toLowerCase().includes('apikey')) {
+        return { success: false, error: 'auth.apiKeyError' }
+      }
+      return { success: false, error: msg }
+    }
     return { success: true }
   },
 
@@ -153,7 +162,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     const { user } = get()
     if (!user) return { success: false, error: 'Not authenticated' }
 
-    const { error: profileError } = await supabase
+    const { error: profileError } = await getSupabase()
       .from('profiles')
       .update({
         kelas,
@@ -180,7 +189,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   },
 
   logout: async () => {
-    await supabase.auth.signOut()
+    await getSupabase().auth.signOut()
     set({ user: null, isAuthenticated: false })
   },
 
@@ -198,7 +207,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     if (updates.angkatan !== undefined) dbUpdates.angkatan = updates.angkatan
     if (updates.isAsprak !== undefined) dbUpdates.is_asprak = updates.isAsprak
 
-    const { data, error } = await supabase
+    const { data, error } = await getSupabase()
       .from('profiles')
       .update(dbUpdates)
       .eq('id', user.id)
@@ -216,8 +225,9 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     if (!isSupabaseConfigured) {
       return { success: false, message: 'auth.supabaseNotConfigured' }
     }
-    const redirectTo = `${window.location.origin}/login`
-    await supabase.auth.resetPasswordForEmail(email, { redirectTo })
+    await getSupabase().auth.resetPasswordForEmail(email, {
+      redirectTo: getAuthRedirectUrl('/auth/callback'),
+    })
     return { success: true, message: 'auth.resetToast' }
   },
 }))

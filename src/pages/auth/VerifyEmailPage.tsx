@@ -32,7 +32,8 @@ export function VerifyEmailPage() {
     if (result.success) {
       toast.success(t('verify.resendSuccess'))
     } else {
-      toast.error(result.error ?? t('verify.resendFailed'))
+      const msg = result.error?.startsWith('auth.') ? t(result.error) : result.error
+      toast.error(msg ?? t('verify.resendFailed'))
     }
   }
 

@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase'
+import { getSupabase } from '@/lib/supabase'
 import {
   assignmentFromDb,
   classFromDb,
@@ -11,9 +11,9 @@ import { SAMPLE_NOTIFICATIONS } from '@/data/sample'
 
 export async function fetchUserSchedule(userId: string) {
   const [classesRes, assignmentsRes, notificationsRes] = await Promise.all([
-    supabase.from('classes').select('*').eq('user_id', userId).order('day_of_week'),
-    supabase.from('assignments').select('*').eq('user_id', userId).order('due_date'),
-    supabase.from('notifications').select('*').eq('user_id', userId).order('created_at', { ascending: false }),
+    getSupabase().from('classes').select('*').eq('user_id', userId).order('day_of_week'),
+    getSupabase().from('assignments').select('*').eq('user_id', userId).order('due_date'),
+    getSupabase().from('notifications').select('*').eq('user_id', userId).order('created_at', { ascending: false }),
   ])
 
   if (classesRes.error) throw classesRes.error
@@ -49,7 +49,7 @@ export async function seedTemplateForKelas(userId: string, kelas: KelasLetter, a
     updated_at: now,
   }))
 
-  const { error: classError } = await supabase.from('classes').insert(classesInsert)
+  const { error: classError } = await getSupabase().from('classes').insert(classesInsert)
   if (classError) throw classError
 
   const welcomeNotif = {
@@ -61,7 +61,7 @@ export async function seedTemplateForKelas(userId: string, kelas: KelasLetter, a
     created_at: now,
   }
 
-  const { error: notifError } = await supabase.from('notifications').insert([
+  const { error: notifError } = await getSupabase().from('notifications').insert([
     welcomeNotif,
     ...SAMPLE_NOTIFICATIONS.slice(0, 2).map((n) => ({
       user_id: userId,
@@ -80,7 +80,7 @@ export async function seedTemplateForKelas(userId: string, kelas: KelasLetter, a
 export async function insertClass(
   data: Omit<ClassSession, 'id' | 'createdAt' | 'updatedAt'>
 ): Promise<ClassSession> {
-  const { data: row, error } = await supabase
+  const { data: row, error } = await getSupabase()
     .from('classes')
     .insert({
       user_id: data.userId,
@@ -122,7 +122,7 @@ export async function updateClassDb(
   if (data.meetingMode !== undefined) payload.meeting_mode = data.meetingMode
   if (data.scheduleKind !== undefined) payload.schedule_kind = data.scheduleKind
 
-  const { data: row, error } = await supabase
+  const { data: row, error } = await getSupabase()
     .from('classes')
     .update(payload)
     .eq('id', id)
@@ -134,22 +134,22 @@ export async function updateClassDb(
 }
 
 export async function deleteClassDb(id: string) {
-  const { error } = await supabase.from('classes').delete().eq('id', id)
+  const { error } = await getSupabase().from('classes').delete().eq('id', id)
   if (error) throw error
 }
 
 export async function updateAssignmentDb(id: string, completed: boolean) {
-  const { error } = await supabase.from('assignments').update({ completed }).eq('id', id)
+  const { error } = await getSupabase().from('assignments').update({ completed }).eq('id', id)
   if (error) throw error
 }
 
 export async function markNotificationReadDb(id: string) {
-  const { error } = await supabase.from('notifications').update({ read: true }).eq('id', id)
+  const { error } = await getSupabase().from('notifications').update({ read: true }).eq('id', id)
   if (error) throw error
 }
 
 export async function markAllNotificationsReadDb(userId: string) {
-  const { error } = await supabase
+  const { error } = await getSupabase()
     .from('notifications')
     .update({ read: true })
     .eq('user_id', userId)

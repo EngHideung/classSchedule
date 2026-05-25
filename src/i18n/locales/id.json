@@ -71,7 +71,12 @@
     "emailExists": "Akun dengan email ini sudah ada",
     "signOut": "Keluar",
     "supabaseNotConfigured": "Supabase belum dikonfigurasi. Tambahkan VITE_SUPABASE_URL dan VITE_SUPABASE_ANON_KEY ke .env",
-    "emailNotConfirmed": "Verifikasi email Anda terlebih dahulu sebelum masuk"
+    "emailNotConfirmed": "Verifikasi email Anda terlebih dahulu sebelum masuk",
+    "apiKeyError": "API key Supabase tidak ditemukan. Periksa file .env (VITE_SUPABASE_ANON_KEY), restart npm run dev, lihat docs/SUPABASE_GMAIL_SMTP.md",
+    "callbackLoading": "Memverifikasi email…",
+    "callbackSuccess": "Email terverifikasi! Mengalihkan…",
+    "callbackNoSession": "Gagal masuk otomatis. Coba login manual.",
+    "supabaseNotConfigured": "Supabase belum dikonfigurasi. Tambahkan VITE_SUPABASE_URL dan VITE_SUPABASE_ANON_KEY ke .env"
   },
   "verify": {
     "title": "Verifikasi email Anda",

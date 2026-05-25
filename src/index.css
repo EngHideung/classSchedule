@@ -1,0 +1,125 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Outfit", "Poppins", ui-sans-serif, sans-serif;
+
+  --color-background: oklch(0.99 0.002 264);
+  --color-foreground: oklch(0.18 0.02 264);
+  --color-card: oklch(1 0 0 / 0.72);
+  --color-card-foreground: oklch(0.18 0.02 264);
+  --color-popover: oklch(1 0 0);
+  --color-popover-foreground: oklch(0.18 0.02 264);
+  --color-primary: oklch(0.52 0.19 264);
+  --color-primary-foreground: oklch(0.99 0 0);
+  --color-secondary: oklch(0.96 0.01 264);
+  --color-secondary-foreground: oklch(0.28 0.03 264);
+  --color-muted: oklch(0.96 0.008 264);
+  --color-muted-foreground: oklch(0.48 0.02 264);
+  --color-accent: oklch(0.72 0.14 195);
+  --color-accent-foreground: oklch(0.15 0.04 195);
+  --color-destructive: oklch(0.55 0.22 25);
+  --color-destructive-foreground: oklch(0.99 0 0);
+  --color-border: oklch(0.9 0.01 264);
+  --color-input: oklch(0.92 0.01 264);
+  --color-ring: oklch(0.52 0.19 264);
+  --color-success: oklch(0.62 0.17 155);
+  --color-warning: oklch(0.75 0.15 75);
+
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.25rem;
+}
+
+.dark {
+  --color-background: oklch(0.14 0.02 264);
+  --color-foreground: oklch(0.96 0.01 264);
+  --color-card: oklch(0.2 0.025 264 / 0.65);
+  --color-card-foreground: oklch(0.96 0.01 264);
+  --color-popover: oklch(0.18 0.025 264);
+  --color-popover-foreground: oklch(0.96 0.01 264);
+  --color-primary: oklch(0.68 0.17 264);
+  --color-primary-foreground: oklch(0.12 0.02 264);
+  --color-secondary: oklch(0.24 0.03 264);
+  --color-secondary-foreground: oklch(0.92 0.01 264);
+  --color-muted: oklch(0.22 0.025 264);
+  --color-muted-foreground: oklch(0.65 0.02 264);
+  --color-accent: oklch(0.72 0.14 195);
+  --color-accent-foreground: oklch(0.12 0.03 195);
+  --color-border: oklch(0.28 0.03 264);
+  --color-input: oklch(0.26 0.03 264);
+  --color-ring: oklch(0.68 0.17 264);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-ring;
+  }
+}
+
+@layer utilities {
+  .glass {
+    @apply bg-card/70 backdrop-blur-xl border border-white/20 dark:border-white/10 shadow-lg;
+  }
+
+  .glass-strong {
+    @apply bg-card/85 backdrop-blur-2xl border border-white/25 dark:border-white/10;
+  }
+
+  .gradient-text {
+    @apply bg-gradient-to-r from-primary via-indigo-500 to-cyan-500 bg-clip-text text-transparent;
+  }
+
+  .gradient-mesh {
+    background:
+      radial-gradient(ellipse 80% 50% at 20% -10%, oklch(0.72 0.14 264 / 0.25), transparent),
+      radial-gradient(ellipse 60% 40% at 80% 0%, oklch(0.72 0.14 195 / 0.2), transparent),
+      radial-gradient(ellipse 50% 30% at 50% 100%, oklch(0.55 0.2 280 / 0.12), transparent);
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-border) transparent;
+  }
+}
+
+/* Focus mode — reduce visual noise */
+.focus-mode aside {
+  @apply max-lg:hidden;
+}
+
+.focus-mode header .relative.flex-1 {
+  @apply hidden sm:block;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

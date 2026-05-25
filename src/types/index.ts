@@ -1,0 +1,73 @@
+export type UserRole = 'student' | 'teacher' | 'admin'
+
+export interface User {
+  id: string
+  email: string
+  name: string
+  role: UserRole
+  avatar?: string
+  institution?: string
+  createdAt: string
+}
+
+export type RecurrenceType = 'none' | 'daily' | 'weekly' | 'biweekly'
+
+export interface ClassSession {
+  id: string
+  title: string
+  lecturer: string
+  room: string
+  color: string
+  dayOfWeek: number // 0 = Sunday
+  startTime: string // HH:mm
+  endTime: string
+  notes?: string
+  recurrence: RecurrenceType
+  userId: string
+  createdAt: string
+  updatedAt: string
+}
+
+export interface Assignment {
+  id: string
+  title: string
+  classId?: string
+  dueDate: string
+  completed: boolean
+  priority: 'low' | 'medium' | 'high'
+  userId: string
+}
+
+export interface Notification {
+  id: string
+  title: string
+  message: string
+  read: boolean
+  type: 'info' | 'warning' | 'success' | 'reminder'
+  createdAt: string
+}
+
+export interface AttendanceRecord {
+  id: string
+  classId: string
+  date: string
+  status: 'present' | 'absent' | 'late'
+}
+
+export type ThemeMode = 'light' | 'dark' | 'system'
+export type AccentColor = 'indigo' | 'cyan' | 'purple' | 'emerald'
+
+export interface UserPreferences {
+  theme: ThemeMode
+  accent: AccentColor
+  onboardingComplete: boolean
+  focusMode: boolean
+  notificationsEnabled: boolean
+}
+
+export interface ShareLink {
+  id: string
+  token: string
+  expiresAt?: string
+  createdAt: string
+}

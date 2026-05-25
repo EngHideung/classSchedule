@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Switch } from '@/components/ui/switch'
 import { AnimatedBackground } from '@/components/shared/AnimatedBackground'
 import { LanguageSwitcher } from '@/components/shared/LanguageSwitcher'
 import { useAuthStore } from '@/stores/authStore'
@@ -19,6 +20,7 @@ export function RegisterPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [role, setRole] = useState<UserRole>('student')
+  const [isAsprak, setIsAsprak] = useState(false)
   const register = useAuthStore((s) => s.register)
   const isLoading = useAuthStore((s) => s.isLoading)
   const navigate = useNavigate()
@@ -29,10 +31,12 @@ export function RegisterPage() {
       toast.error(t('auth.passwordMin'))
       return
     }
-    const result = await register({ name, email, password, role })
-    if (result.success) {
+    const result = await register({ name, email, password, role, isAsprak })
+    if (result.success && result.needsVerification) {
+      navigate('/verify-email', { state: { email: result.email ?? email } })
+    } else if (result.success) {
       toast.success(t('auth.registerToast'))
-      navigate('/app/dashboard')
+      navigate('/app/setup')
     } else {
       const msg = result.error?.startsWith('auth.') ? t(result.error) : result.error
       toast.error(msg ?? 'Error')
@@ -87,6 +91,13 @@ export function RegisterPage() {
                 <SelectItem value="admin">{t('auth.admin')}</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+          <div className="flex items-center justify-between rounded-xl border bg-secondary/30 px-4 py-3">
+            <div>
+              <Label>{t('setup.asprakLabel')}</Label>
+              <p className="text-xs text-muted-foreground">{t('setup.asprakDesc')}</p>
+            </div>
+            <Switch checked={isAsprak} onCheckedChange={setIsAsprak} />
           </div>
           <Button type="submit" className="w-full rounded-xl" disabled={isLoading}>
             {isLoading ? t('auth.creatingAccount') : t('auth.createAccount')}

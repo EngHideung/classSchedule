@@ -58,9 +58,10 @@ Open [http://localhost:5173](http://localhost:5173) in your browser.
 2. Go to **Project Settings → API** and copy:
    - **Project URL** → `VITE_SUPABASE_URL`
    - **anon public** key → `VITE_SUPABASE_ANON_KEY`
-3. Open **SQL Editor** and run the full script from `supabase/schema.sql`
-4. (Optional) Under **Authentication → URL Configuration**, add `http://localhost:5173` as Site URL for password reset
-5. Register a new account in the app — sample classes are seeded automatically on first login
+3. Open **SQL Editor** and run `supabase/schema.sql`, then **`supabase/migrations/002_kelas_setup.sql`**
+4. Under **Authentication → Providers → Email**, enable email confirmations (recommended)
+5. Under **Authentication → URL Configuration**, set Site URL to `http://localhost:5173`
+6. Register → verify email via Gmail → login → choose **Kelas (A–F)** & **Angkatan** → template jadwal loads automatically
 
 ### Language / Bahasa
 

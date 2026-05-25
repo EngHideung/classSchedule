@@ -8,7 +8,6 @@ import {
   insertClass,
   markAllNotificationsReadDb,
   markNotificationReadDb,
-  seedSampleData,
   updateAssignmentDb,
   updateClassDb,
 } from '@/services/scheduleService'
@@ -22,6 +21,7 @@ interface ScheduleState {
   isLoading: boolean
   isSynced: boolean
   loadSchedule: (userId: string) => Promise<void>
+  refreshSchedule: () => Promise<void>
   addClass: (
     data: Omit<ClassSession, 'id' | 'createdAt' | 'updatedAt'>
   ) => Promise<{ success: boolean; conflicts?: ClassSession[] }>
@@ -45,6 +45,8 @@ interface ScheduleState {
   reset: () => void
 }
 
+let lastUserId: string | null = null
+
 export const useScheduleStore = create<ScheduleState>((set, get) => ({
   classes: [],
   assignments: [],
@@ -56,14 +58,10 @@ export const useScheduleStore = create<ScheduleState>((set, get) => ({
 
   loadSchedule: async (userId) => {
     if (!isSupabaseConfigured) return
+    lastUserId = userId
     set({ isLoading: true })
     try {
-      let data = await fetchUserSchedule(userId)
-
-      if (data.classes.length === 0) {
-        data = await seedSampleData(userId)
-      }
-
+      const data = await fetchUserSchedule(userId)
       set({
         classes: data.classes,
         assignments: data.assignments,
@@ -76,6 +74,10 @@ export const useScheduleStore = create<ScheduleState>((set, get) => ({
     } finally {
       set({ isLoading: false })
     }
+  },
+
+  refreshSchedule: async () => {
+    if (lastUserId) await get().loadSchedule(lastUserId)
   },
 
   addClass: async (data) => {
@@ -110,9 +112,7 @@ export const useScheduleStore = create<ScheduleState>((set, get) => ({
 
     try {
       const updated = await updateClassDb(id, data)
-      set({
-        classes: classes.map((c) => (c.id === id ? updated : c)),
-      })
+      set({ classes: classes.map((c) => (c.id === id ? updated : c)) })
       return { success: true }
     } catch (err) {
       console.error('[ClassFlow] updateClass:', err)
@@ -166,7 +166,7 @@ export const useScheduleStore = create<ScheduleState>((set, get) => ({
   },
 
   markAllNotificationsRead: async () => {
-    const userId = get().classes[0]?.userId
+    const userId = lastUserId
     if (!userId) return
     try {
       await markAllNotificationsReadDb(userId)
@@ -194,11 +194,13 @@ export const useScheduleStore = create<ScheduleState>((set, get) => ({
     })
   },
 
-  reset: () =>
+  reset: () => {
+    lastUserId = null
     set({
       classes: [],
       assignments: [],
       notifications: [],
       isSynced: false,
-    }),
+    })
+  },
 }))

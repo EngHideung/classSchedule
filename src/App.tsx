@@ -5,6 +5,7 @@ import { TooltipProvider } from '@/components/ui/tooltip'
 import { MarketingLayout } from '@/components/layout/MarketingLayout'
 import { AppLayout } from '@/components/layout/AppLayout'
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
+import { SetupGuard } from '@/components/auth/SetupGuard'
 import { AuthProvider } from '@/components/auth/AuthProvider'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useTheme } from '@/hooks/useTheme'
@@ -15,6 +16,8 @@ const PricingPage = lazy(() => import('@/pages/PricingPage').then((m) => ({ defa
 const LoginPage = lazy(() => import('@/pages/auth/LoginPage').then((m) => ({ default: m.LoginPage })))
 const RegisterPage = lazy(() => import('@/pages/auth/RegisterPage').then((m) => ({ default: m.RegisterPage })))
 const ForgotPasswordPage = lazy(() => import('@/pages/auth/ForgotPasswordPage').then((m) => ({ default: m.ForgotPasswordPage })))
+const VerifyEmailPage = lazy(() => import('@/pages/auth/VerifyEmailPage').then((m) => ({ default: m.VerifyEmailPage })))
+const ClassSetupPage = lazy(() => import('@/pages/setup/ClassSetupPage').then((m) => ({ default: m.ClassSetupPage })))
 const DashboardPage = lazy(() => import('@/pages/DashboardPage').then((m) => ({ default: m.DashboardPage })))
 const CalendarPage = lazy(() => import('@/pages/CalendarPage').then((m) => ({ default: m.CalendarPage })))
 const SettingsPage = lazy(() => import('@/pages/SettingsPage').then((m) => ({ default: m.SettingsPage })))
@@ -46,13 +49,25 @@ function AppRoutes() {
           <Route path="login" element={<LoginPage />} />
           <Route path="register" element={<RegisterPage />} />
           <Route path="forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="verify-email" element={<VerifyEmailPage />} />
         </Route>
+
+        <Route
+          path="app/setup"
+          element={
+            <ProtectedRoute>
+              <ClassSetupPage />
+            </ProtectedRoute>
+          }
+        />
 
         <Route
           path="app"
           element={
             <ProtectedRoute>
-              <AppLayout />
+              <SetupGuard>
+                <AppLayout />
+              </SetupGuard>
             </ProtectedRoute>
           }
         >

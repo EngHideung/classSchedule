@@ -24,7 +24,10 @@ export function LoginPage() {
     const result = await login(email, password)
     if (result.success) {
       toast.success(t('auth.welcomeToast'))
-      navigate('/app/dashboard')
+      const u = useAuthStore.getState().user
+      navigate(u?.setupComplete ? '/app/dashboard' : '/app/setup')
+    } else if (result.needsVerification) {
+      navigate('/verify-email', { state: { email } })
     } else {
       const msg = result.error?.startsWith('auth.') ? t(result.error) : result.error
       toast.error(msg ?? t('auth.invalidCredentials'))

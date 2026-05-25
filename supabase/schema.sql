@@ -10,6 +10,10 @@ create table if not exists public.profiles (
   institution text,
   avatar_url text,
   language text not null default 'en' check (language in ('en', 'id')),
+  kelas text check (kelas in ('A', 'B', 'C', 'D', 'E', 'F')),
+  angkatan text,
+  setup_complete boolean not null default false,
+  is_asprak boolean not null default false,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
@@ -27,6 +31,9 @@ create table if not exists public.classes (
   end_time text not null,
   notes text,
   recurrence text not null default 'weekly' check (recurrence in ('none', 'daily', 'weekly', 'biweekly')),
+  course_type text not null default 'theory' check (course_type in ('theory', 'practicum')),
+  meeting_mode text not null default 'offline' check (meeting_mode in ('online', 'offline')),
+  schedule_kind text not null default 'study' check (schedule_kind in ('study', 'teach')),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );

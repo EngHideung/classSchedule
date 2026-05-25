@@ -70,7 +70,40 @@
     "invalidCredentials": "Email atau kata sandi salah",
     "emailExists": "Akun dengan email ini sudah ada",
     "signOut": "Keluar",
-    "supabaseNotConfigured": "Supabase belum dikonfigurasi. Tambahkan VITE_SUPABASE_URL dan VITE_SUPABASE_ANON_KEY ke .env"
+    "supabaseNotConfigured": "Supabase belum dikonfigurasi. Tambahkan VITE_SUPABASE_URL dan VITE_SUPABASE_ANON_KEY ke .env",
+    "emailNotConfirmed": "Verifikasi email Anda terlebih dahulu sebelum masuk"
+  },
+  "verify": {
+    "title": "Verifikasi email Anda",
+    "subtitle": "Kami mengirim tautan konfirmasi ke Gmail/email Anda. Klik tautan tersebut untuk mengaktifkan akun ClassFlow.",
+    "step1": "Buka kotak masuk (cek Gmail, termasuk folder Spam/Promosi)",
+    "step2": "Cari email dari Supabase / ClassFlow lalu klik \"Confirm your mail\"",
+    "step3": "Kembali ke sini dan masuk — setup jadwal akan dimulai",
+    "resend": "Kirim ulang email verifikasi",
+    "resending": "Mengirim…",
+    "resendSuccess": "Email verifikasi dikirim ulang!",
+    "resendFailed": "Gagal mengirim. Coba lagi nanti.",
+    "alreadyVerified": "Sudah verifikasi — Masuk",
+    "checkSpam": "Tidak menerima email? Cek spam atau",
+    "wrongEmail": "gunakan email lain",
+    "noEmail": "Email tidak ditemukan. Silakan daftar ulang."
+  },
+  "setup": {
+    "title": "Atur kelas Anda",
+    "subtitle": "Pilih kelas dan angkatan. Kami akan memuat template jadwal yang bisa Anda sesuaikan.",
+    "selectKelas": "Pilih kelas",
+    "selectAngkatan": "Pilih angkatan",
+    "angkatan": "Angkatan",
+    "asprakLabel": "Saya Asprak (perwakilan kelas)",
+    "asprakDesc": "Aktifkan jadwal \"Mengajar\" saat menambah matkul",
+    "continue": "Muat jadwal saya",
+    "loading": "Memuat template…",
+    "success": "Jadwal Kelas {{kelas}} · Angkatan {{angkatan}} siap!",
+    "failed": "Gagal memuat jadwal",
+    "previewTitle": "Pratinjau template",
+    "previewDesc": "Berdasarkan pilihan kelas Anda",
+    "previewEmpty": "Pilih kelas & angkatan untuk pratinjau",
+    "moreClasses": "matkul lainnya di template"
   },
   "landing": {
     "badge": "Gratis untuk siswa, guru & komunitas",
@@ -175,7 +208,17 @@
     "overlapWith": "Bentrok dengan {{names}}",
     "classAdded": "Kelas ditambahkan ke jadwal",
     "classUpdated": "Kelas diperbarui",
-    "classRemoved": "Kelas dihapus"
+    "classRemoved": "Kelas dihapus",
+    "courseType": "Jenis matkul",
+    "theory": "Teori",
+    "practicum": "Praktikum",
+    "meetingMode": "Mode pertemuan",
+    "online": "Online",
+    "offline": "Offline",
+    "scheduleKind": "Jenis jadwal",
+    "study": "Belajar",
+    "teach": "Mengajar",
+    "roomOnline": "Link / platform"
   },
   "settings": {
     "title": "Pengaturan",

@@ -70,7 +70,40 @@
     "invalidCredentials": "Invalid email or password",
     "emailExists": "An account with this email already exists",
     "signOut": "Sign out",
-    "supabaseNotConfigured": "Supabase is not configured. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to .env"
+    "supabaseNotConfigured": "Supabase is not configured. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to .env",
+    "emailNotConfirmed": "Please verify your email before signing in"
+  },
+  "verify": {
+    "title": "Verify your email",
+    "subtitle": "We sent a confirmation link to your Gmail/email. Click the link to activate your ClassFlow account.",
+    "step1": "Open your inbox (check Gmail, including Spam/Promotions)",
+    "step2": "Find the email from Supabase / ClassFlow and click \"Confirm your mail\"",
+    "step3": "Return here and sign in — your schedule setup will begin",
+    "resend": "Resend verification email",
+    "resending": "Sending…",
+    "resendSuccess": "Verification email sent again!",
+    "resendFailed": "Could not resend. Try again later.",
+    "alreadyVerified": "I've verified — Sign in",
+    "checkSpam": "Didn't receive it? Check spam or",
+    "wrongEmail": "use a different email",
+    "noEmail": "Email address not found. Please register again."
+  },
+  "setup": {
+    "title": "Set up your class",
+    "subtitle": "Choose your class group and cohort year. We'll load a ready-made schedule template you can customize.",
+    "selectKelas": "Select class (Kelas)",
+    "selectAngkatan": "Select cohort year (Angkatan)",
+    "angkatan": "Cohort",
+    "asprakLabel": "I am a class representative (Asprak)",
+    "asprakDesc": "Enables \"Teaching\" schedule type when adding classes",
+    "continue": "Load my schedule",
+    "loading": "Loading template…",
+    "success": "Schedule for Class {{kelas}} · {{angkatan}} is ready!",
+    "failed": "Failed to load schedule",
+    "previewTitle": "Template preview",
+    "previewDesc": "Based on your class selection",
+    "previewEmpty": "Select class & cohort to preview",
+    "moreClasses": "more courses in template"
   },
   "landing": {
     "badge": "Free for students, teachers & communities",
@@ -175,7 +208,17 @@
     "overlapWith": "Overlaps with {{names}}",
     "classAdded": "Class added to your schedule",
     "classUpdated": "Class updated",
-    "classRemoved": "Class removed"
+    "classRemoved": "Class removed",
+    "courseType": "Course type",
+    "theory": "Theory",
+    "practicum": "Practicum",
+    "meetingMode": "Meeting mode",
+    "online": "Online",
+    "offline": "Offline",
+    "scheduleKind": "Schedule type",
+    "study": "Study",
+    "teach": "Teaching",
+    "roomOnline": "Link / platform"
   },
   "settings": {
     "title": "Settings",

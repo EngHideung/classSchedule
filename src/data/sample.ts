@@ -5,8 +5,15 @@ export const CLASS_COLORS = [
   '#f59e0b', '#ec4899', '#3b82f6', '#14b8a6',
 ]
 
+const DEFAULT_CLASS_FIELDS = {
+  courseType: 'theory' as const,
+  meetingMode: 'offline' as const,
+  scheduleKind: 'study' as const,
+}
+
 export const SAMPLE_CLASSES: Omit<ClassSession, 'userId' | 'createdAt' | 'updatedAt'>[] = [
   {
+    ...DEFAULT_CLASS_FIELDS,
     id: 'class-1',
     title: 'Advanced Algorithms',
     lecturer: 'Dr. Sarah Chen',
@@ -19,6 +26,7 @@ export const SAMPLE_CLASSES: Omit<ClassSession, 'userId' | 'createdAt' | 'update
     notes: 'Bring laptop for lab exercises',
   },
   {
+    ...DEFAULT_CLASS_FIELDS,
     id: 'class-2',
     title: 'Human-Computer Interaction',
     lecturer: 'Prof. James Okonkwo',
@@ -30,6 +38,7 @@ export const SAMPLE_CLASSES: Omit<ClassSession, 'userId' | 'createdAt' | 'update
     recurrence: 'weekly',
   },
   {
+    ...DEFAULT_CLASS_FIELDS,
     id: 'class-3',
     title: 'Database Systems',
     lecturer: 'Dr. Elena Vasquez',
@@ -41,6 +50,7 @@ export const SAMPLE_CLASSES: Omit<ClassSession, 'userId' | 'createdAt' | 'update
     recurrence: 'weekly',
   },
   {
+    ...DEFAULT_CLASS_FIELDS,
     id: 'class-4',
     title: 'Software Engineering',
     lecturer: 'Prof. Michael Torres',
@@ -53,6 +63,7 @@ export const SAMPLE_CLASSES: Omit<ClassSession, 'userId' | 'createdAt' | 'update
     notes: 'Team project presentations this week',
   },
   {
+    ...DEFAULT_CLASS_FIELDS,
     id: 'class-5',
     title: 'Machine Learning',
     lecturer: 'Dr. Aisha Rahman',
@@ -64,6 +75,7 @@ export const SAMPLE_CLASSES: Omit<ClassSession, 'userId' | 'createdAt' | 'update
     recurrence: 'weekly',
   },
   {
+    ...DEFAULT_CLASS_FIELDS,
     id: 'class-6',
     title: 'Capstone Seminar',
     lecturer: 'Faculty Panel',

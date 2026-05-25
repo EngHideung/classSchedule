@@ -6,6 +6,10 @@ export interface DbProfile {
   institution: string | null
   avatar_url: string | null
   language: 'en' | 'id'
+  kelas: string | null
+  angkatan: string | null
+  setup_complete: boolean
+  is_asprak: boolean
   created_at: string
   updated_at: string
 }
@@ -22,6 +26,9 @@ export interface DbClass {
   end_time: string
   notes: string | null
   recurrence: 'none' | 'daily' | 'weekly' | 'biweekly'
+  course_type: 'theory' | 'practicum'
+  meeting_mode: 'online' | 'offline'
+  schedule_kind: 'study' | 'teach'
   created_at: string
   updated_at: string
 }

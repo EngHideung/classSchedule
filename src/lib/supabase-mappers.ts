@@ -1,5 +1,6 @@
 import type { Assignment, ClassSession, Notification, User } from '@/types'
 import type { DbAssignment, DbClass, DbNotification, DbProfile } from '@/types/database'
+import type { KelasLetter } from '@/types'
 
 export function profileToUser(p: DbProfile): User {
   return {
@@ -10,6 +11,10 @@ export function profileToUser(p: DbProfile): User {
     institution: p.institution ?? undefined,
     avatar: p.avatar_url ?? undefined,
     language: p.language,
+    kelas: (p.kelas as KelasLetter) ?? undefined,
+    angkatan: p.angkatan ?? undefined,
+    setupComplete: p.setup_complete ?? false,
+    isAsprak: p.is_asprak ?? false,
     createdAt: p.created_at,
   }
 }
@@ -26,27 +31,12 @@ export function classFromDb(row: DbClass): ClassSession {
     endTime: row.end_time,
     notes: row.notes ?? undefined,
     recurrence: row.recurrence,
+    courseType: row.course_type ?? 'theory',
+    meetingMode: row.meeting_mode ?? 'offline',
+    scheduleKind: row.schedule_kind ?? 'study',
     userId: row.user_id,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
-  }
-}
-
-export function classToDb(
-  data: Omit<ClassSession, 'id' | 'createdAt' | 'updatedAt'> & Partial<Pick<ClassSession, 'id'>>
-): Omit<DbClass, 'created_at' | 'updated_at'> {
-  return {
-    id: data.id!,
-    user_id: data.userId,
-    title: data.title,
-    lecturer: data.lecturer,
-    room: data.room,
-    color: data.color,
-    day_of_week: data.dayOfWeek,
-    start_time: data.startTime,
-    end_time: data.endTime,
-    notes: data.notes ?? null,
-    recurrence: data.recurrence,
   }
 }
 

@@ -4,9 +4,10 @@ import {
   classFromDb,
   notificationFromDb,
 } from '@/lib/supabase-mappers'
-import type { ClassSession } from '@/types'
+import type { ClassSession, KelasLetter } from '@/types'
 import type { DbClass } from '@/types/database'
-import { SAMPLE_ASSIGNMENTS, SAMPLE_CLASSES, SAMPLE_NOTIFICATIONS } from '@/data/sample'
+import { getScheduleTemplate } from '@/data/scheduleTemplates'
+import { SAMPLE_NOTIFICATIONS } from '@/data/sample'
 
 export async function fetchUserSchedule(userId: string) {
   const [classesRes, assignmentsRes, notificationsRes] = await Promise.all([
@@ -26,10 +27,11 @@ export async function fetchUserSchedule(userId: string) {
   }
 }
 
-export async function seedSampleData(userId: string) {
+export async function seedTemplateForKelas(userId: string, kelas: KelasLetter, angkatan: string) {
   const now = new Date().toISOString()
+  const template = getScheduleTemplate(kelas)
 
-  const classesInsert = SAMPLE_CLASSES.map((c) => ({
+  const classesInsert = template.map((c) => ({
     user_id: userId,
     title: c.title,
     lecturer: c.lecturer,
@@ -38,46 +40,38 @@ export async function seedSampleData(userId: string) {
     day_of_week: c.dayOfWeek,
     start_time: c.startTime,
     end_time: c.endTime,
-    notes: c.notes ?? null,
+    notes: c.notes ? `${c.notes} · Angkatan ${angkatan}` : `Kelas ${kelas} · Angkatan ${angkatan}`,
     recurrence: c.recurrence,
+    course_type: c.courseType,
+    meeting_mode: c.meetingMode,
+    schedule_kind: c.scheduleKind,
     created_at: now,
     updated_at: now,
   }))
 
-  const { data: insertedClasses, error: classError } = await supabase
-    .from('classes')
-    .insert(classesInsert)
-    .select()
-
+  const { error: classError } = await supabase.from('classes').insert(classesInsert)
   if (classError) throw classError
 
-  const classIdMap = new Map<string, string>()
-  SAMPLE_CLASSES.forEach((c, i) => {
-    if (insertedClasses?.[i]) classIdMap.set(c.id, insertedClasses[i].id)
-  })
-
-  const assignmentsInsert = SAMPLE_ASSIGNMENTS.map((a) => ({
+  const welcomeNotif = {
     user_id: userId,
-    class_id: a.classId ? classIdMap.get(a.classId) ?? null : null,
-    title: a.title,
-    due_date: a.dueDate,
-    completed: a.completed,
-    priority: a.priority,
-  }))
+    title: 'Selamat datang di ClassFlow!',
+    message: `Jadwal Kelas ${kelas} Angkatan ${angkatan} berhasil dimuat. Sesuaikan jadwal sesuai kebutuhanmu.`,
+    read: false,
+    type: 'success' as const,
+    created_at: now,
+  }
 
-  const { error: assignError } = await supabase.from('assignments').insert(assignmentsInsert)
-  if (assignError) throw assignError
-
-  const notificationsInsert = SAMPLE_NOTIFICATIONS.map((n) => ({
-    user_id: userId,
-    title: n.title,
-    message: n.message,
-    read: n.read,
-    type: n.type,
-    created_at: n.createdAt,
-  }))
-
-  const { error: notifError } = await supabase.from('notifications').insert(notificationsInsert)
+  const { error: notifError } = await supabase.from('notifications').insert([
+    welcomeNotif,
+    ...SAMPLE_NOTIFICATIONS.slice(0, 2).map((n) => ({
+      user_id: userId,
+      title: n.title,
+      message: n.message,
+      read: n.read,
+      type: n.type,
+      created_at: n.createdAt,
+    })),
+  ])
   if (notifError) throw notifError
 
   return fetchUserSchedule(userId)
@@ -99,6 +93,9 @@ export async function insertClass(
       end_time: data.endTime,
       notes: data.notes ?? null,
       recurrence: data.recurrence,
+      course_type: data.courseType,
+      meeting_mode: data.meetingMode,
+      schedule_kind: data.scheduleKind,
     })
     .select()
     .single()
@@ -121,6 +118,9 @@ export async function updateClassDb(
   if (data.endTime !== undefined) payload.end_time = data.endTime
   if (data.notes !== undefined) payload.notes = data.notes ?? null
   if (data.recurrence !== undefined) payload.recurrence = data.recurrence
+  if (data.courseType !== undefined) payload.course_type = data.courseType
+  if (data.meetingMode !== undefined) payload.meeting_mode = data.meetingMode
+  if (data.scheduleKind !== undefined) payload.schedule_kind = data.scheduleKind
 
   const { data: row, error } = await supabase
     .from('classes')

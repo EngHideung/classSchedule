@@ -20,12 +20,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [initAuth])
 
   useEffect(() => {
-    if (user?.id && isSupabaseConfigured) {
+    if (user?.id && user.setupComplete && isSupabaseConfigured) {
       void loadSchedule(user.id)
     } else {
       resetSchedule()
     }
-  }, [user?.id, loadSchedule, resetSchedule])
+  }, [user?.id, user?.setupComplete, loadSchedule, resetSchedule])
 
   useEffect(() => {
     if (user?.language === 'en' || user?.language === 'id') {

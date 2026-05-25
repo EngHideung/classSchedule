@@ -2,6 +2,14 @@ export type UserRole = 'student' | 'teacher' | 'admin'
 
 export type AppLanguage = 'en' | 'id'
 
+export type KelasLetter = 'A' | 'B' | 'C' | 'D' | 'E' | 'F'
+
+export type CourseType = 'theory' | 'practicum'
+
+export type MeetingMode = 'online' | 'offline'
+
+export type ScheduleKind = 'study' | 'teach'
+
 export interface User {
   id: string
   email: string
@@ -10,6 +18,10 @@ export interface User {
   avatar?: string
   institution?: string
   language?: AppLanguage
+  kelas?: KelasLetter
+  angkatan?: string
+  setupComplete: boolean
+  isAsprak: boolean
   createdAt: string
 }
 
@@ -21,11 +33,14 @@ export interface ClassSession {
   lecturer: string
   room: string
   color: string
-  dayOfWeek: number // 0 = Sunday
-  startTime: string // HH:mm
+  dayOfWeek: number
+  startTime: string
   endTime: string
   notes?: string
   recurrence: RecurrenceType
+  courseType: CourseType
+  meetingMode: MeetingMode
+  scheduleKind: ScheduleKind
   userId: string
   createdAt: string
   updatedAt: string
@@ -73,4 +88,10 @@ export interface ShareLink {
   token: string
   expiresAt?: string
   createdAt: string
+}
+
+export interface ClassSetupInput {
+  kelas: KelasLetter
+  angkatan: string
+  isAsprak?: boolean
 }

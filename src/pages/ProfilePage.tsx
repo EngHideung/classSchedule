@@ -80,6 +80,16 @@ export function ProfilePage() {
                 <Input id="institution" className="pl-10" value={institution} onChange={(e) => setInstitution(e.target.value)} placeholder={t('profile.institutionPlaceholder')} />
               </div>
             </div>
+            {user?.kelas && user?.angkatan && (
+              <div className="rounded-xl border bg-primary/5 px-4 py-3 text-sm">
+                <span className="font-medium">{t('setup.selectKelas')}:</span> {user.kelas}
+                <span className="mx-2 text-muted-foreground">·</span>
+                <span className="font-medium">{t('setup.angkatan')}:</span> {user.angkatan}
+                {user.isAsprak && (
+                  <span className="ml-2 text-xs text-primary">({t('setup.asprakLabel')})</span>
+                )}
+              </div>
+            )}
             <Button onClick={() => void handleSave()}>{t('profile.saveChanges')}</Button>
           </CardContent>
         </Card>

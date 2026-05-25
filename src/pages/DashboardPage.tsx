@@ -1,7 +1,10 @@
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 import { format, getDay, parseISO } from 'date-fns'
+import { enUS, id as idLocale } from 'date-fns/locale'
+import { useLanguageStore } from '@/stores/languageStore'
 import {
   Calendar, CheckCircle2, Circle, Sparkles, TrendingUp,
   Bell, ArrowRight, Brain,
@@ -21,6 +24,9 @@ import { MOTIVATIONAL_QUOTES, STUDY_TIPS } from '@/data/sample'
 import { cn } from '@/lib/utils'
 
 export function DashboardPage() {
+  const { t } = useTranslation()
+  const language = useLanguageStore((s) => s.language)
+  const dateLocale = language === 'id' ? idLocale : enUS
   const user = useAuthStore((s) => s.user)
   const classes = useScheduleStore((s) => s.classes)
   const assignments = useScheduleStore((s) => s.assignments)
@@ -56,9 +62,9 @@ export function DashboardPage() {
 
   const greeting = () => {
     const h = today.getHours()
-    if (h < 12) return 'Good morning'
-    if (h < 17) return 'Good afternoon'
-    return 'Good evening'
+    if (h < 12) return t('dashboard.goodMorning')
+    if (h < 17) return t('dashboard.goodAfternoon')
+    return t('dashboard.goodEvening')
   }
 
   return (
@@ -74,7 +80,7 @@ export function DashboardPage() {
             {greeting()}, {user?.name?.split(' ')[0] ?? 'there'} 👋
           </motion.h1>
           <p className="mt-1 text-muted-foreground">
-            {format(today, 'EEEE, MMMM d')} · {todaySessions.length} class{todaySessions.length !== 1 ? 'es' : ''} today
+            {format(today, 'EEEE, MMMM d', { locale: dateLocale })} · {t('dashboard.classesToday', { count: todaySessions.length })}
           </p>
         </header>
 
@@ -84,16 +90,16 @@ export function DashboardPage() {
           <Card className="glass md:col-span-2 lg:row-span-2 lg:col-span-2">
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
-                <CardTitle>Today&apos;s schedule</CardTitle>
-                <CardDescription>Your classes for {format(today, 'EEEE')}</CardDescription>
+                <CardTitle>{t('dashboard.todaySchedule')}</CardTitle>
+                <CardDescription>{t('dashboard.todayDesc', { day: format(today, 'EEEE', { locale: dateLocale }) })}</CardDescription>
               </div>
               <Button variant="ghost" size="sm" asChild>
-                <Link to="/app/calendar">View calendar <ArrowRight className="h-4 w-4" /></Link>
+                <Link to="/app/calendar">{t('dashboard.viewCalendar')} <ArrowRight className="h-4 w-4" /></Link>
               </Button>
             </CardHeader>
             <CardContent className="space-y-3">
               {todaySessions.length === 0 ? (
-                <p className="py-8 text-center text-sm text-muted-foreground">No classes today — enjoy your free time!</p>
+                <p className="py-8 text-center text-sm text-muted-foreground">{t('dashboard.noClassesToday')}</p>
               ) : (
                 todaySessions.map((s) => <ClassCard key={s.id} session={s} />)
               )}
@@ -113,7 +119,7 @@ export function DashboardPage() {
           <Card className="glass">
             <CardHeader className="pb-2">
               <CardTitle className="text-base flex items-center gap-2">
-                <TrendingUp className="h-4 w-4 text-primary" /> Weekly hours
+                <TrendingUp className="h-4 w-4 text-primary" /> {t('dashboard.weeklyHours')}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -124,8 +130,8 @@ export function DashboardPage() {
           {/* Pomodoro */}
           <Card className="glass">
             <CardHeader className="pb-2">
-              <CardTitle className="text-base">Focus timer</CardTitle>
-              <CardDescription>Pomodoro technique</CardDescription>
+              <CardTitle className="text-base">{t('dashboard.focusTimer')}</CardTitle>
+              <CardDescription>{t('dashboard.pomodoro')}</CardDescription>
             </CardHeader>
             <CardContent>
               <PomodoroWidget />
@@ -136,9 +142,9 @@ export function DashboardPage() {
           <Card className="glass">
             <CardHeader className="pb-2 flex flex-row items-center justify-between">
               <CardTitle className="text-base flex items-center gap-2">
-                <Bell className="h-4 w-4" /> Notifications
+                <Bell className="h-4 w-4" /> {t('dashboard.notifications')}
               </CardTitle>
-              {unread > 0 && <Badge variant="warning">{unread} new</Badge>}
+              {unread > 0 && <Badge variant="warning">{unread} {t('common.new')}</Badge>}
             </CardHeader>
             <CardContent className="space-y-2 max-h-[140px] overflow-y-auto">
               {notifications.slice(0, 3).map((n) => (
@@ -153,19 +159,19 @@ export function DashboardPage() {
           {/* Assignments */}
           <Card className="glass md:col-span-2">
             <CardHeader>
-              <CardTitle className="text-base">Upcoming assignments</CardTitle>
-              <CardDescription>{completionRate}% completion rate</CardDescription>
+              <CardTitle className="text-base">{t('dashboard.upcomingAssignments')}</CardTitle>
+              <CardDescription>{t('dashboard.completionRate', { rate: completionRate })}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-2">
               {upcomingAssignments.length === 0 ? (
-                <p className="text-sm text-muted-foreground">All caught up!</p>
+                <p className="text-sm text-muted-foreground">{t('dashboard.allCaughtUp')}</p>
               ) : (
                 upcomingAssignments.map((a) => (
                   <button
                     key={a.id}
                     type="button"
                     className="flex w-full items-center gap-3 rounded-lg p-2 text-left hover:bg-secondary/80 transition-colors"
-                    onClick={() => toggleAssignment(a.id)}
+                    onClick={() => void toggleAssignment(a.id)}
                   >
                     {a.completed ? (
                       <CheckCircle2 className="h-4 w-4 text-success shrink-0" />
@@ -186,14 +192,14 @@ export function DashboardPage() {
           <Card className="glass md:col-span-2 border-dashed border-primary/30">
             <CardHeader>
               <CardTitle className="text-base flex items-center gap-2">
-                <Brain className="h-4 w-4 text-primary" /> AI study tip
-                <Badge variant="outline" className="text-[10px]">Preview</Badge>
+                <Brain className="h-4 w-4 text-primary" /> {t('dashboard.aiStudyTip')}
+                <Badge variant="outline" className="text-[10px]">{t('dashboard.preview')}</Badge>
               </CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground">{studyTip}</p>
               <Button variant="link" className="mt-2 h-auto p-0 text-xs" disabled>
-                Generate personalized tips (coming soon)
+                {t('dashboard.generateTips')}
               </Button>
             </CardContent>
           </Card>
@@ -203,9 +209,9 @@ export function DashboardPage() {
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
                 <CardTitle className="text-base flex items-center gap-2">
-                  <Calendar className="h-4 w-4" /> This week
+                  <Calendar className="h-4 w-4" /> {t('dashboard.thisWeek')}
                 </CardTitle>
-                <CardDescription>{filtered.length} classes</CardDescription>
+                <CardDescription>{t('dashboard.classCount', { count: filtered.length })}</CardDescription>
               </div>
             </CardHeader>
             <CardContent>

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { toast } from 'sonner'
+import { useTranslation } from 'react-i18next'
 import { LogOut, Mail, Building2, ClipboardCheck } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -14,6 +15,7 @@ import { useScheduleStore } from '@/stores/scheduleStore'
 import { useNavigate } from 'react-router-dom'
 
 export function ProfilePage() {
+  const { t } = useTranslation()
   const user = useAuthStore((s) => s.user)
   const updateProfile = useAuthStore((s) => s.updateProfile)
   const logout = useAuthStore((s) => s.logout)
@@ -25,23 +27,23 @@ export function ProfilePage() {
   const [institution, setInstitution] = useState(user?.institution ?? '')
 
   const initials = user?.name?.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase() ?? '?'
-  const attendanceRate = 87 // mock attendance stat
+  const attendanceRate = 87
   const completed = assignments.filter((a) => a.completed).length
 
-  const handleSave = () => {
-    updateProfile({ name, institution })
-    toast.success('Profile updated')
+  const handleSave = async () => {
+    await updateProfile({ name, institution })
+    toast.success(t('profile.profileUpdated'))
   }
 
-  const handleLogout = () => {
-    logout()
+  const handleLogout = async () => {
+    await logout()
     navigate('/')
   }
 
   return (
     <PageTransition>
       <div className="mx-auto max-w-2xl space-y-6">
-        <h1 className="font-display text-2xl font-bold">Profile</h1>
+        <h1 className="font-display text-2xl font-bold">{t('profile.title')}</h1>
 
         <Card className="glass overflow-hidden">
           <div className="h-24 bg-gradient-to-r from-primary to-cyan-500" />
@@ -58,50 +60,50 @@ export function ProfilePage() {
 
         <Card className="glass">
           <CardHeader>
-            <CardTitle className="text-base">Account details</CardTitle>
+            <CardTitle className="text-base">{t('profile.accountDetails')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="name">Display name</Label>
+              <Label htmlFor="name">{t('profile.displayName')}</Label>
               <Input id="name" value={name} onChange={(e) => setName(e.target.value)} />
             </div>
             <div className="space-y-2">
-              <Label>Email</Label>
+              <Label>{t('auth.email')}</Label>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Mail className="h-4 w-4" /> {user?.email}
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="institution">Institution</Label>
+              <Label htmlFor="institution">{t('profile.institution')}</Label>
               <div className="relative">
                 <Building2 className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input id="institution" className="pl-10" value={institution} onChange={(e) => setInstitution(e.target.value)} placeholder="Your school or university" />
+                <Input id="institution" className="pl-10" value={institution} onChange={(e) => setInstitution(e.target.value)} placeholder={t('profile.institutionPlaceholder')} />
               </div>
             </div>
-            <Button onClick={handleSave}>Save changes</Button>
+            <Button onClick={() => void handleSave()}>{t('profile.saveChanges')}</Button>
           </CardContent>
         </Card>
 
         <Card className="glass">
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
-              <ClipboardCheck className="h-4 w-4" /> Attendance tracker
+              <ClipboardCheck className="h-4 w-4" /> {t('profile.attendance')}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center justify-between text-sm">
-              <span>Overall attendance</span>
+              <span>{t('profile.overallAttendance')}</span>
               <span className="font-semibold">{attendanceRate}%</span>
             </div>
             <Progress value={attendanceRate} className="mt-3" />
             <p className="mt-4 text-xs text-muted-foreground">
-              Tracking {classes.length} classes · {completed}/{assignments.length} assignments completed
+              {t('profile.tracking', { classes: classes.length, completed, total: assignments.length })}
             </p>
           </CardContent>
         </Card>
 
-        <Button variant="destructive" className="w-full" onClick={handleLogout}>
-          <LogOut className="h-4 w-4" /> Sign out
+        <Button variant="destructive" className="w-full" onClick={() => void handleLogout()}>
+          <LogOut className="h-4 w-4" /> {t('auth.signOut')}
         </Button>
       </div>
     </PageTransition>

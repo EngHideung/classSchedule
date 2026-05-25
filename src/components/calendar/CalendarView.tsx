@@ -5,7 +5,9 @@ import { format, addDays, startOfWeek, getDay } from 'date-fns'
 import { Button } from '@/components/ui/button'
 import { useScheduleStore } from '@/stores/scheduleStore'
 import { useUIStore } from '@/stores/uiStore'
-import { timeToMinutes, minutesToTime, DAY_NAMES_SHORT, formatTimeRange } from '@/lib/schedule'
+import { timeToMinutes, minutesToTime, formatTimeRange } from '@/lib/schedule'
+import { useDayNames } from '@/hooks/useDayNames'
+import { useTranslation } from 'react-i18next'
 import type { ClassSession } from '@/types'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
@@ -19,6 +21,8 @@ interface CalendarViewProps {
 }
 
 export function CalendarView({ view }: CalendarViewProps) {
+  const { t } = useTranslation()
+  const { short: DAY_NAMES_SHORT } = useDayNames()
   const [weekStart, setWeekStart] = useState(() => startOfWeek(new Date(), { weekStartsOn: 1 }))
   const classes = useScheduleStore((s) => s.classes)
   const moveClass = useScheduleStore((s) => s.moveClass)
@@ -30,24 +34,24 @@ export function CalendarView({ view }: CalendarViewProps) {
   )
 
   const handleDrop = useCallback(
-    (dayIndex: number, hour: number, sessionId: string) => {
+    async (dayIndex: number, hour: number, sessionId: string) => {
       const session = classes.find((c) => c.id === sessionId)
       if (!session) return
       const dayOfWeek = getDay(weekDays[dayIndex])
       const startTime = minutesToTime(hour * 60)
       const duration = timeToMinutes(session.endTime) - timeToMinutes(session.startTime)
       const endTime = minutesToTime(hour * 60 + duration)
-      const result = moveClass(sessionId, dayOfWeek, startTime, endTime)
+      const result = await moveClass(sessionId, dayOfWeek, startTime, endTime)
       if (!result.success) {
-        toast.error('Conflict detected', {
+        toast.error(t('calendar.conflict'), {
           description: result.conflicts?.map((c) => c.title).join(', '),
         })
       } else {
-        toast.success('Class rescheduled')
+        toast.success(t('calendar.rescheduled'))
       }
       setDraggedId(null)
     },
-    [classes, moveClass, weekDays]
+    [classes, moveClass, weekDays, t]
   )
 
   if (view === 'agenda') {
@@ -77,7 +81,7 @@ export function CalendarView({ view }: CalendarViewProps) {
           </motion.button>
         ))}
         {sorted.length === 0 && (
-          <p className="py-12 text-center text-muted-foreground">No classes scheduled</p>
+          <p className="py-12 text-center text-muted-foreground">{t('calendar.noClasses')}</p>
         )}
       </div>
     )

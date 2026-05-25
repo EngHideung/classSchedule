@@ -1,33 +1,23 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 import { Calendar, Keyboard, Sparkles } from 'lucide-react'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { usePreferencesStore } from '@/stores/preferencesStore'
 
-const steps = [
-  {
-    icon: Sparkles,
-    title: 'Welcome to ClassFlow',
-    desc: 'Your beautiful hub for classes, assignments, and focus time.',
-  },
-  {
-    icon: Calendar,
-    title: 'Manage your schedule',
-    desc: 'Add classes, detect conflicts, and drag events on the calendar.',
-  },
-  {
-    icon: Keyboard,
-    title: 'Work at the speed of thought',
-    desc: 'Press ⌘K for the command palette, ⌘N to add a class instantly.',
-  },
-]
-
 export function OnboardingModal() {
+  const { t } = useTranslation()
   const complete = usePreferencesStore((s) => s.onboardingComplete)
   const setComplete = usePreferencesStore((s) => s.setOnboardingComplete)
   const [step, setStep] = useState(0)
   const open = !complete
+
+  const steps = [
+    { icon: Sparkles, title: t('onboarding.welcome'), desc: t('onboarding.welcomeDesc') },
+    { icon: Calendar, title: t('onboarding.manageSchedule'), desc: t('onboarding.manageDesc') },
+    { icon: Keyboard, title: t('onboarding.shortcuts'), desc: t('onboarding.shortcutsDesc') },
+  ]
 
   const Icon = steps[step].icon
 
@@ -57,11 +47,11 @@ export function OnboardingModal() {
           </div>
         </div>
         <div className="flex justify-between p-6">
-          <Button variant="ghost" onClick={() => setComplete(true)}>Skip</Button>
+          <Button variant="ghost" onClick={() => setComplete(true)}>{t('common.skip')}</Button>
           {step < steps.length - 1 ? (
-            <Button onClick={() => setStep(step + 1)}>Next</Button>
+            <Button onClick={() => setStep(step + 1)}>{t('common.next')}</Button>
           ) : (
-            <Button onClick={() => setComplete(true)}>Get started</Button>
+            <Button onClick={() => setComplete(true)}>{t('onboarding.getStarted')}</Button>
           )}
         </div>
       </DialogContent>

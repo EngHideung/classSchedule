@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
@@ -9,7 +10,7 @@ import { useUIStore } from '@/stores/uiStore'
 import { useScheduleStore } from '@/stores/scheduleStore'
 import { useAuthStore } from '@/stores/authStore'
 import { CLASS_COLORS } from '@/data/sample'
-import { DAY_NAMES } from '@/lib/schedule'
+import { useDayNames } from '@/hooks/useDayNames'
 import type { RecurrenceType } from '@/types'
 import { cn } from '@/lib/utils'
 
@@ -26,6 +27,8 @@ const defaultForm = {
 }
 
 export function ClassFormModal() {
+  const { t } = useTranslation()
+  const { full: DAY_NAMES } = useDayNames()
   const open = useUIStore((s) => s.classModalOpen)
   const editingId = useUIStore((s) => s.editingClassId)
   const closeClassModal = useUIStore((s) => s.closeClassModal)
@@ -34,8 +37,8 @@ export function ClassFormModal() {
   const updateClass = useScheduleStore((s) => s.updateClass)
   const deleteClass = useScheduleStore((s) => s.deleteClass)
   const user = useAuthStore((s) => s.user)
-
   const [form, setForm] = useState(defaultForm)
+  const [saving, setSaving] = useState(false)
 
   useEffect(() => {
     if (editingId) {
@@ -58,31 +61,45 @@ export function ClassFormModal() {
     }
   }, [editingId, classes, open])
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!user) return
+    setSaving(true)
 
     const payload = { ...form, userId: user.id }
 
     if (editingId) {
-      const result = updateClass(editingId, payload)
+      const result = await updateClass(editingId, payload)
       if (!result.success) {
-        toast.error('Schedule conflict detected', {
-          description: `Overlaps with ${result.conflicts?.map((c) => c.title).join(', ')}`,
+        toast.error(t('classForm.conflictError'), {
+          description: t('classForm.overlapWith', {
+            names: result.conflicts?.map((c) => c.title).join(', '),
+          }),
         })
-        return
+      } else {
+        toast.success(t('classForm.classUpdated'))
+        closeClassModal()
       }
-      toast.success('Class updated')
     } else {
-      const result = addClass(payload)
+      const result = await addClass(payload)
       if (!result.success) {
-        toast.error('Schedule conflict detected', {
-          description: `Overlaps with ${result.conflicts?.map((c) => c.title).join(', ')}`,
+        toast.error(t('classForm.conflictError'), {
+          description: t('classForm.overlapWith', {
+            names: result.conflicts?.map((c) => c.title).join(', '),
+          }),
         })
-        return
+      } else {
+        toast.success(t('classForm.classAdded'))
+        closeClassModal()
       }
-      toast.success('Class added to your schedule')
     }
+    setSaving(false)
+  }
+
+  const handleDelete = async () => {
+    if (!editingId) return
+    await deleteClass(editingId)
+    toast.success(t('classForm.classRemoved'))
     closeClassModal()
   }
 
@@ -90,26 +107,26 @@ export function ClassFormModal() {
     <Dialog open={open} onOpenChange={(v) => !v && closeClassModal()}>
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>{editingId ? 'Edit class' : 'Add new class'}</DialogTitle>
+          <DialogTitle>{editingId ? t('classForm.editClass') : t('classForm.addClass')}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="title">Class name</Label>
-            <Input id="title" required value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="e.g. Advanced Algorithms" />
+            <Label htmlFor="title">{t('classForm.className')}</Label>
+            <Input id="title" required value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder={t('classForm.classNamePlaceholder')} />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-2">
-              <Label htmlFor="lecturer">Lecturer</Label>
-              <Input id="lecturer" value={form.lecturer} onChange={(e) => setForm({ ...form, lecturer: e.target.value })} placeholder="Dr. Smith" />
+              <Label htmlFor="lecturer">{t('classForm.lecturer')}</Label>
+              <Input id="lecturer" value={form.lecturer} onChange={(e) => setForm({ ...form, lecturer: e.target.value })} placeholder={t('classForm.lecturerPlaceholder')} />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="room">Room</Label>
-              <Input id="room" value={form.room} onChange={(e) => setForm({ ...form, room: e.target.value })} placeholder="Hall B · 204" />
+              <Label htmlFor="room">{t('classForm.room')}</Label>
+              <Input id="room" value={form.room} onChange={(e) => setForm({ ...form, room: e.target.value })} placeholder={t('classForm.roomPlaceholder')} />
             </div>
           </div>
           <div className="grid grid-cols-3 gap-3">
             <div className="space-y-2">
-              <Label>Day</Label>
+              <Label>{t('classForm.day')}</Label>
               <Select value={String(form.dayOfWeek)} onValueChange={(v) => setForm({ ...form, dayOfWeek: Number(v) })}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
@@ -120,16 +137,16 @@ export function ClassFormModal() {
               </Select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="start">Start</Label>
+              <Label htmlFor="start">{t('classForm.start')}</Label>
               <Input id="start" type="time" value={form.startTime} onChange={(e) => setForm({ ...form, startTime: e.target.value })} />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="end">End</Label>
+              <Label htmlFor="end">{t('classForm.end')}</Label>
               <Input id="end" type="time" value={form.endTime} onChange={(e) => setForm({ ...form, endTime: e.target.value })} />
             </div>
           </div>
           <div className="space-y-2">
-            <Label>Color tag</Label>
+            <Label>{t('classForm.colorTag')}</Label>
             <div className="flex flex-wrap gap-2">
               {CLASS_COLORS.map((c) => (
                 <button
@@ -138,35 +155,37 @@ export function ClassFormModal() {
                   className={cn('h-8 w-8 rounded-full ring-2 ring-offset-2 transition-transform hover:scale-110', form.color === c ? 'ring-primary' : 'ring-transparent')}
                   style={{ backgroundColor: c }}
                   onClick={() => setForm({ ...form, color: c })}
-                  aria-label={`Select color ${c}`}
+                  aria-label={`Color ${c}`}
                   aria-pressed={form.color === c}
                 />
               ))}
             </div>
           </div>
           <div className="space-y-2">
-            <Label>Recurrence</Label>
+            <Label>{t('classForm.recurrence')}</Label>
             <Select value={form.recurrence} onValueChange={(v) => setForm({ ...form, recurrence: v as RecurrenceType })}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="none">Does not repeat</SelectItem>
-                <SelectItem value="weekly">Weekly</SelectItem>
-                <SelectItem value="biweekly">Biweekly</SelectItem>
+                <SelectItem value="none">{t('classForm.doesNotRepeat')}</SelectItem>
+                <SelectItem value="weekly">{t('classForm.weekly')}</SelectItem>
+                <SelectItem value="biweekly">{t('classForm.biweekly')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="notes">Notes</Label>
-            <Input id="notes" value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} placeholder="Optional notes" />
+            <Label htmlFor="notes">{t('classForm.notes')}</Label>
+            <Input id="notes" value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} placeholder={t('classForm.notesPlaceholder')} />
           </div>
           <div className="flex gap-2 pt-2">
             {editingId && (
-              <Button type="button" variant="destructive" onClick={() => { deleteClass(editingId); toast.success('Class removed'); closeClassModal() }}>
-                Delete
+              <Button type="button" variant="destructive" onClick={() => void handleDelete()}>
+                {t('common.delete')}
               </Button>
             )}
-            <Button type="button" variant="outline" className="ml-auto" onClick={closeClassModal}>Cancel</Button>
-            <Button type="submit">{editingId ? 'Save changes' : 'Add class'}</Button>
+            <Button type="button" variant="outline" className="ml-auto" onClick={closeClassModal}>{t('common.cancel')}</Button>
+            <Button type="submit" disabled={saving}>
+              {saving ? t('common.loading') : editingId ? t('classForm.saveChanges') : t('classForm.addClass')}
+            </Button>
           </div>
         </form>
       </DialogContent>

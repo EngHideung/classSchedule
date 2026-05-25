@@ -21,10 +21,12 @@ A modern, production-ready class schedule management web application for student
 | Framework | React 19 + Vite 8 |
 | Language | TypeScript |
 | Styling | Tailwind CSS 4 |
+| Database & Auth | **Supabase** (free tier) |
+| i18n | **i18next** — English & Indonesian |
 | UI Components | shadcn/ui patterns (Radix primitives) |
 | Animation | Framer Motion |
 | Routing | React Router 7 |
-| State | Zustand + localStorage persistence |
+| State | Zustand |
 | Icons | Lucide React |
 | Dates | date-fns |
 | Charts | Recharts |
@@ -41,24 +43,32 @@ A modern, production-ready class schedule management web application for student
 ### Installation
 
 ```bash
-# Clone or navigate to the project
 cd classSchedule
-
-# Install dependencies
 npm install
-
-# Start development server
+cp .env.example .env
+# Edit .env with your Supabase URL and anon key
 npm run dev
 ```
 
 Open [http://localhost:5173](http://localhost:5173) in your browser.
 
-### Demo Account
+### Supabase Setup (required)
 
-| Field | Value |
-|-------|-------|
-| Email | `demo@classflow.app` |
-| Password | `demo1234` |
+1. Create a free project at [supabase.com](https://supabase.com)
+2. Go to **Project Settings → API** and copy:
+   - **Project URL** → `VITE_SUPABASE_URL`
+   - **anon public** key → `VITE_SUPABASE_ANON_KEY`
+3. Open **SQL Editor** and run the full script from `supabase/schema.sql`
+4. (Optional) Under **Authentication → URL Configuration**, add `http://localhost:5173` as Site URL for password reset
+5. Register a new account in the app — sample classes are seeded automatically on first login
+
+### Language / Bahasa
+
+Switch between **English** and **Indonesia (Bahasa Indonesia)** using:
+
+- The flag button in the header (marketing & app)
+- **Settings → Language**
+- Preference is saved to your profile in Supabase when logged in
 
 ## Scripts
 
@@ -139,7 +149,7 @@ ClassFlow follows **Jakob Nielsen's 10 Usability Heuristics** and WCAG-oriented 
 
 ## Data Storage
 
-All data is stored in the browser via **localStorage** (no backend required). To connect Supabase or Firebase later, replace the stores in `src/stores/` with API calls.
+All schedule data, profiles, assignments, and notifications are stored in **Supabase** with Row Level Security (each user only sees their own data). Authentication uses Supabase Auth (email/password).
 
 ## License
 

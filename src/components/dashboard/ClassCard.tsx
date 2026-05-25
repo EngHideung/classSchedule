@@ -1,6 +1,7 @@
 import { MapPin, User, Clock, Pencil, Trash2 } from 'lucide-react'
 import type { ClassSession } from '@/types'
-import { formatTimeRange, DAY_NAMES_SHORT } from '@/lib/schedule'
+import { formatTimeRange } from '@/lib/schedule'
+import { useDayNames } from '@/hooks/useDayNames'
 import { Button } from '@/components/ui/button'
 import { useUIStore } from '@/stores/uiStore'
 import { useScheduleStore } from '@/stores/scheduleStore'
@@ -14,6 +15,7 @@ interface ClassCardProps {
 }
 
 export function ClassCard({ session, compact }: ClassCardProps) {
+  const { short: DAY_NAMES_SHORT } = useDayNames()
   const openClassModal = useUIStore((s) => s.openClassModal)
   const deleteClass = useScheduleStore((s) => s.deleteClass)
 
@@ -47,7 +49,7 @@ export function ClassCard({ session, compact }: ClassCardProps) {
           <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openClassModal(session.id)} aria-label={`Edit ${session.title}`}>
             <Pencil className="h-3.5 w-3.5" />
           </Button>
-          <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => deleteClass(session.id)} aria-label={`Delete ${session.title}`}>
+          <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => void deleteClass(session.id)} aria-label={`Delete ${session.title}`}>
             <Trash2 className="h-3.5 w-3.5" />
           </Button>
         </div>

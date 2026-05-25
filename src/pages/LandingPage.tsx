@@ -1,64 +1,68 @@
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 import { ArrowRight, Calendar, Zap, Users, Shield, Star, ChevronDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { AnimatedBackground } from '@/components/shared/AnimatedBackground'
-import { FAQ_ITEMS, TESTIMONIALS } from '@/data/sample'
-import { useState } from 'react'
+import { TESTIMONIALS } from '@/data/sample'
+import { useState, useMemo } from 'react'
 import { cn } from '@/lib/utils'
 
-const features = [
-  { icon: Calendar, title: 'Smart scheduling', desc: 'Weekly, daily, and agenda views with drag-and-drop.' },
-  { icon: Zap, title: 'Conflict detection', desc: 'Never double-book again — instant overlap warnings.' },
-  { icon: Users, title: 'Collaboration', desc: 'Share, export, and invite classmates in seconds.' },
-  { icon: Shield, title: 'Private & secure', desc: 'Your data stays in your browser. No tracking.' },
-]
-
-const stagger = {
-  animate: { transition: { staggerChildren: 0.08 } },
-}
-
-const fadeUp = {
-  initial: { opacity: 0, y: 24 },
-  animate: { opacity: 1, y: 0 },
-}
+const stagger = { animate: { transition: { staggerChildren: 0.08 } } }
+const fadeUp = { initial: { opacity: 0, y: 24 }, animate: { opacity: 1, y: 0 } }
 
 export function LandingPage() {
+  const { t } = useTranslation()
   const [openFaq, setOpenFaq] = useState<number | null>(0)
+
+  const features = useMemo(
+    () => [
+      { icon: Calendar, title: t('landing.smartScheduling'), desc: t('landing.smartSchedulingDesc') },
+      { icon: Zap, title: t('landing.conflictDetection'), desc: t('landing.conflictDetectionDesc') },
+      { icon: Users, title: t('landing.collaboration'), desc: t('landing.collaborationDesc') },
+      { icon: Shield, title: t('landing.privateSecure'), desc: t('landing.privateSecureDesc') },
+    ],
+    [t]
+  )
+
+  const faqItems = useMemo(
+    () => [
+      { q: t('faq.q1'), a: t('faq.a1') },
+      { q: t('faq.q2'), a: t('faq.a2') },
+      { q: t('faq.q3'), a: t('faq.a3') },
+      { q: t('faq.q4'), a: t('faq.a4') },
+    ],
+    [t]
+  )
 
   return (
     <div className="relative overflow-hidden">
       <AnimatedBackground />
 
-      {/* Hero */}
       <section className="relative px-4 pb-24 pt-16 sm:px-6 lg:px-8 lg:pt-24">
         <div className="mx-auto max-w-7xl">
           <motion.div variants={stagger} initial="initial" animate="animate" className="text-center">
             <motion.div variants={fadeUp} className="mb-6 inline-flex items-center gap-2 rounded-full border bg-card/60 px-4 py-1.5 text-sm backdrop-blur">
               <span className="h-2 w-2 rounded-full bg-success animate-pulse" />
-              Free for students, teachers & communities
+              {t('landing.badge')}
             </motion.div>
             <motion.h1 variants={fadeUp} className="font-display text-4xl font-extrabold tracking-tight text-balance sm:text-6xl lg:text-7xl">
-              Your classes,{' '}
-              <span className="gradient-text">beautifully organized</span>
+              {t('landing.heroTitle')}{' '}
+              <span className="gradient-text">{t('landing.heroHighlight')}</span>
             </motion.h1>
             <motion.p variants={fadeUp} className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground text-balance">
-              ClassFlow brings the polish of Linear and the clarity of Google Calendar to academic scheduling. Plan smarter, stress less.
+              {t('landing.heroSubtitle')}
             </motion.p>
             <motion.div variants={fadeUp} className="mt-10 flex flex-wrap items-center justify-center gap-4">
               <Button size="lg" className="rounded-xl px-8" asChild>
-                <Link to="/register">Start free <ArrowRight className="ml-1 h-4 w-4" /></Link>
+                <Link to="/register">{t('nav.register')} <ArrowRight className="ml-1 h-4 w-4" /></Link>
               </Button>
               <Button size="lg" variant="outline" className="rounded-xl" asChild>
-                <Link to="/features">Explore features</Link>
+                <Link to="/features">{t('landing.exploreFeatures')}</Link>
               </Button>
             </motion.div>
-            <motion.p variants={fadeUp} className="mt-4 text-xs text-muted-foreground">
-              Demo: demo@classflow.app / demo1234
-            </motion.p>
           </motion.div>
 
-          {/* Product mockup */}
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
@@ -79,7 +83,7 @@ export function LandingPage() {
                       <div className="mt-3 space-y-2">
                         <div className="h-12 rounded-lg bg-indigo-500/20 border-l-4 border-indigo-500 px-2 py-1 text-xs font-medium">Algorithms · 9:00</div>
                         {i === 0 && <div className="h-12 rounded-lg bg-cyan-500/20 border-l-4 border-cyan-500 px-2 py-1 text-xs font-medium">HCI · 13:00</div>}
-                        {i === 1 && <div className="h-12 rounded-lg bg-purple-500/20 border-l-4 border-purple-500 px-2 py-1 text-xs font-medium">Databases · 10:00</div>}
+                        {i === 1 && <div className="h-12 rounded-lg bg-purple-500/20 border-l-4 border-purple-500 px-2 py-1 text-xs font-medium">DB · 10:00</div>}
                       </div>
                     </div>
                   ))}
@@ -90,11 +94,10 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* Features bento */}
       <section className="relative border-t bg-secondary/20 px-4 py-24 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
-          <h2 className="font-display text-center text-3xl font-bold sm:text-4xl">Built for how you actually learn</h2>
-          <p className="mx-auto mt-4 max-w-xl text-center text-muted-foreground">Every feature follows Nielsen&apos;s usability heuristics — visible status, error prevention, and recognition over recall.</p>
+          <h2 className="font-display text-center text-3xl font-bold sm:text-4xl">{t('landing.featuresTitle')}</h2>
+          <p className="mx-auto mt-4 max-w-xl text-center text-muted-foreground">{t('landing.featuresSubtitle')}</p>
           <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {features.map(({ icon: Icon, title, desc }, i) => (
               <motion.div
@@ -116,14 +119,13 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* Testimonials */}
       <section className="px-4 py-24 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
-          <h2 className="font-display text-center text-3xl font-bold">Loved by learners worldwide</h2>
+          <h2 className="font-display text-center text-3xl font-bold">{t('landing.testimonialsTitle')}</h2>
           <div className="mt-12 grid gap-6 md:grid-cols-3">
-            {TESTIMONIALS.map((t, i) => (
+            {TESTIMONIALS.map((item, i) => (
               <motion.div
-                key={t.name}
+                key={item.name}
                 initial={{ opacity: 0, scale: 0.95 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
@@ -131,16 +133,16 @@ export function LandingPage() {
                 className="glass rounded-2xl p-6"
               >
                 <div className="flex gap-1 text-amber-400">
-                  {Array.from({ length: t.rating }).map((_, j) => (
+                  {Array.from({ length: item.rating }).map((_, j) => (
                     <Star key={j} className="h-4 w-4 fill-current" />
                   ))}
                 </div>
-                <p className="mt-4 text-sm leading-relaxed">&ldquo;{t.quote}&rdquo;</p>
+                <p className="mt-4 text-sm leading-relaxed">&ldquo;{item.quote}&rdquo;</p>
                 <div className="mt-6 flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary">{t.avatar}</div>
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary">{item.avatar}</div>
                   <div>
-                    <p className="text-sm font-semibold">{t.name}</p>
-                    <p className="text-xs text-muted-foreground">{t.role}</p>
+                    <p className="text-sm font-semibold">{item.name}</p>
+                    <p className="text-xs text-muted-foreground">{item.role}</p>
                   </div>
                 </div>
               </motion.div>
@@ -149,12 +151,11 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* FAQ */}
       <section className="border-t bg-secondary/20 px-4 py-24 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl">
-          <h2 className="font-display text-center text-3xl font-bold">Frequently asked questions</h2>
+          <h2 className="font-display text-center text-3xl font-bold">{t('landing.faqTitle')}</h2>
           <div className="mt-10 space-y-2">
-            {FAQ_ITEMS.map((item, i) => (
+            {faqItems.map((item, i) => (
               <div key={item.q} className="glass rounded-xl overflow-hidden">
                 <button
                   type="button"
@@ -176,13 +177,12 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* CTA */}
       <section className="px-4 py-24 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-4xl rounded-3xl bg-gradient-to-br from-primary to-cyan-600 p-12 text-center text-white shadow-2xl">
-          <h2 className="font-display text-3xl font-bold">Ready to flow through your semester?</h2>
-          <p className="mt-4 text-white/80">Join thousands of students and educators. No credit card. No catch.</p>
+          <h2 className="font-display text-3xl font-bold">{t('landing.ctaTitle')}</h2>
+          <p className="mt-4 text-white/80">{t('landing.ctaSubtitle')}</p>
           <Button size="lg" variant="secondary" className="mt-8 rounded-xl" asChild>
-            <Link to="/register">Create free account</Link>
+            <Link to="/register">{t('landing.createFree')}</Link>
           </Button>
         </div>
       </section>

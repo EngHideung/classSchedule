@@ -1,5 +1,7 @@
 export type UserRole = 'student' | 'teacher' | 'admin'
 
+export type AppLanguage = 'en' | 'id'
+
 export interface User {
   id: string
   email: string
@@ -7,6 +9,7 @@ export interface User {
   role: UserRole
   avatar?: string
   institution?: string
+  language?: AppLanguage
   createdAt: string
 }
 

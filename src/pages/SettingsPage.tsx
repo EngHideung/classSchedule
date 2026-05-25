@@ -1,4 +1,5 @@
 import { toast } from 'sonner'
+import { useTranslation } from 'react-i18next'
 import { Download, Share2, Palette, Bell, Focus, UserPlus } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
@@ -7,19 +8,11 @@ import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { PageTransition } from '@/components/shared/PageTransition'
 import { ThemeToggle } from '@/components/shared/ThemeToggle'
+import { LanguageSwitcher } from '@/components/shared/LanguageSwitcher'
 import { usePreferencesStore } from '@/stores/preferencesStore'
-import type { AccentColor } from '@/types'
-
-const accents: { value: AccentColor; label: string; color: string }[] = [
-  { value: 'indigo', label: 'Indigo', color: '#6366f1' },
-  { value: 'cyan', label: 'Cyan', color: '#06b6d4' },
-  { value: 'purple', label: 'Purple', color: '#8b5cf6' },
-  { value: 'emerald', label: 'Emerald', color: '#10b981' },
-]
 
 export function SettingsPage() {
-  const accent = usePreferencesStore((s) => s.accent)
-  const setAccent = usePreferencesStore((s) => s.setAccent)
+  const { t } = useTranslation()
   const focusMode = usePreferencesStore((s) => s.focusMode)
   const setFocusMode = usePreferencesStore((s) => s.setFocusMode)
   const notificationsEnabled = usePreferencesStore((s) => s.notificationsEnabled)
@@ -31,53 +24,53 @@ export function SettingsPage() {
     <PageTransition>
       <div className="mx-auto max-w-2xl space-y-6">
         <div>
-          <h1 className="font-display text-2xl font-bold">Settings</h1>
-          <p className="text-muted-foreground">Customize your ClassFlow experience</p>
+          <h1 className="font-display text-2xl font-bold">{t('settings.title')}</h1>
+          <p className="text-muted-foreground">{t('settings.subtitle')}</p>
         </div>
 
         <Card className="glass">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base"><Palette className="h-4 w-4" /> Appearance</CardTitle>
-            <CardDescription>Theme and accent colors</CardDescription>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <Palette className="h-4 w-4" /> {t('settings.language')}
+            </CardTitle>
+            <CardDescription>{t('settings.languageDesc')}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <LanguageSwitcher />
+          </CardContent>
+        </Card>
+
+        <Card className="glass">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <Palette className="h-4 w-4" /> {t('settings.appearance')}
+            </CardTitle>
+            <CardDescription>{t('settings.appearanceDesc')}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="space-y-2">
-              <Label>Theme</Label>
+              <Label>{t('settings.theme')}</Label>
               <ThemeToggle />
-            </div>
-            <div className="space-y-2">
-              <Label>Accent color</Label>
-              <div className="flex gap-2">
-                {accents.map((a) => (
-                  <button
-                    key={a.value}
-                    type="button"
-                    className={`h-10 w-10 rounded-full ring-2 ring-offset-2 transition-transform hover:scale-110 ${accent === a.value ? 'ring-primary' : 'ring-transparent'}`}
-                    style={{ backgroundColor: a.color }}
-                    onClick={() => setAccent(a.value)}
-                    aria-label={a.label}
-                    aria-pressed={accent === a.value}
-                  />
-                ))}
-              </div>
             </div>
           </CardContent>
         </Card>
 
         <Card className="glass">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base"><Focus className="h-4 w-4" /> Focus & productivity</CardTitle>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <Focus className="h-4 w-4" /> {t('settings.focusProductivity')}
+            </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <Label>Focus mode</Label>
-                <p className="text-xs text-muted-foreground">Minimal distractions in the app shell</p>
+                <Label>{t('settings.focusMode')}</Label>
+                <p className="text-xs text-muted-foreground">{t('settings.focusModeDesc')}</p>
               </div>
-              <Switch checked={focusMode} onCheckedChange={setFocusMode} aria-label="Toggle focus mode" />
+              <Switch checked={focusMode} onCheckedChange={setFocusMode} />
             </div>
             <div className="space-y-2">
-              <Label>Pomodoro duration (minutes)</Label>
+              <Label>{t('settings.pomodoroDuration')}</Label>
               <Select value={String(pomodoroMinutes)} onValueChange={(v) => setPomodoroMinutes(Number(v))}>
                 <SelectTrigger className="w-32"><SelectValue /></SelectTrigger>
                 <SelectContent>
@@ -93,11 +86,13 @@ export function SettingsPage() {
 
         <Card className="glass">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base"><Bell className="h-4 w-4" /> Notifications</CardTitle>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <Bell className="h-4 w-4" /> {t('settings.notifications')}
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center justify-between">
-              <Label>Enable reminders</Label>
+              <Label>{t('settings.enableReminders')}</Label>
               <Switch checked={notificationsEnabled} onCheckedChange={setNotificationsEnabled} />
             </div>
           </CardContent>
@@ -105,21 +100,21 @@ export function SettingsPage() {
 
         <Card className="glass">
           <CardHeader>
-            <CardTitle className="text-base">Collaboration & export</CardTitle>
-            <CardDescription>Share and export your schedule</CardDescription>
+            <CardTitle className="text-base">{t('settings.collaboration')}</CardTitle>
+            <CardDescription>{t('settings.collaborationDesc')}</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-wrap gap-2">
-            <Button variant="outline" onClick={() => toast.success('Public share link copied!')}>
-              <Share2 className="h-4 w-4" /> Copy share link
+            <Button variant="outline" onClick={() => toast.success(t('settings.shareCopied'))}>
+              <Share2 className="h-4 w-4" /> {t('settings.copyShareLink')}
             </Button>
-            <Button variant="outline" onClick={() => toast.success('Schedule exported as PDF')}>
-              <Download className="h-4 w-4" /> Export PDF
+            <Button variant="outline" onClick={() => toast.success(t('settings.pdfExported'))}>
+              <Download className="h-4 w-4" /> {t('settings.exportPdf')}
             </Button>
-            <Button variant="outline" onClick={() => toast.success('Schedule exported as PNG')}>
-              <Download className="h-4 w-4" /> Export image
+            <Button variant="outline" onClick={() => toast.success(t('settings.imageExported'))}>
+              <Download className="h-4 w-4" /> {t('settings.exportImage')}
             </Button>
-            <Button variant="outline" onClick={() => toast.info('Invite link copied — share with classmates')}>
-              <UserPlus className="h-4 w-4" /> Invite friends
+            <Button variant="outline" onClick={() => toast.info(t('settings.inviteCopied'))}>
+              <UserPlus className="h-4 w-4" /> {t('settings.inviteFriends')}
             </Button>
           </CardContent>
         </Card>

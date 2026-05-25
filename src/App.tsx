@@ -5,6 +5,7 @@ import { TooltipProvider } from '@/components/ui/tooltip'
 import { MarketingLayout } from '@/components/layout/MarketingLayout'
 import { AppLayout } from '@/components/layout/AppLayout'
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
+import { AuthProvider } from '@/components/auth/AuthProvider'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useTheme } from '@/hooks/useTheme'
 
@@ -71,10 +72,12 @@ function AppRoutes() {
 export default function App() {
   return (
     <BrowserRouter>
-      <TooltipProvider delayDuration={300}>
-        <AppRoutes />
-        <Toaster richColors position="bottom-right" closeButton />
-      </TooltipProvider>
+      <AuthProvider>
+        <TooltipProvider delayDuration={300}>
+          <AppRoutes />
+          <Toaster richColors position="bottom-right" closeButton />
+        </TooltipProvider>
+      </AuthProvider>
     </BrowserRouter>
   )
 }

@@ -1,8 +1,10 @@
 import { useEffect } from 'react'
 import { toast } from 'sonner'
+import { useTranslation } from 'react-i18next'
 import { usePreferencesStore } from '@/stores/preferencesStore'
 
 export function usePomodoro() {
+  const { t } = useTranslation()
   const pomodoroRunning = usePreferencesStore((s) => s.pomodoroRunning)
   const tickPomodoro = usePreferencesStore((s) => s.tickPomodoro)
   const pomodoroTimeLeft = usePreferencesStore((s) => s.pomodoroTimeLeft)
@@ -19,7 +21,7 @@ export function usePomodoro() {
   useEffect(() => {
     if (pomodoroTimeLeft === 0 && pomodoroRunning) {
       pausePomodoro()
-      toast.success('Pomodoro complete! Take a well-deserved break.')
+      toast.success(t('toast.pomodoroComplete'))
     }
   }, [pomodoroTimeLeft, pomodoroRunning, pausePomodoro])
 }
